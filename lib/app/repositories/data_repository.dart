@@ -1,14 +1,16 @@
 import 'package:coronavirus_rest_api_flutter_course/app/repositories/endpoints.data.dart';
 import 'package:coronavirus_rest_api_flutter_course/app/services/api.dart';
 import 'package:coronavirus_rest_api_flutter_course/app/services/api_service.dart';
+import 'package:coronavirus_rest_api_flutter_course/app/services/data_cache_service.dart';
 import 'package:coronavirus_rest_api_flutter_course/app/services/endpoint_data.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
 
 class DataRepository {
   final APIService apiService;
+  final DataCacheService dataCacheService;
 
-  DataRepository({@required this.apiService});
+  DataRepository({@required this.apiService, this.dataCacheService});
 
   String _accessToken;
 
@@ -18,12 +20,19 @@ class DataRepository {
             accessToken: _accessToken, endpoint: endpoint),
       );
 
-  Future<EndpointsData> getAllEndpointsData() async =>
-      await _getDataRefreshingToken<EndpointsData>(
-        onGetData: _getAllEndpointsData,
-      );
+  EndpointsData getAllEndpointsCachedData() => dataCacheService.getData();
+
+  Future<EndpointsData> getAllEndpointsData() async {
+    final endpointsData = await _getDataRefreshingToken<EndpointsData>(
+      onGetData: _getAllEndpointsData,
+    );
+    await dataCacheService.setData(endpointsData);
+    return endpointsData;
+  }
 
   Future<T> _getDataRefreshingToken<T>({Future<T> Function() onGetData}) async {
+    //temp code for testing
+    //throw 'error';
     try {
       if (_accessToken == null) {
         _accessToken = await apiService.getAccessToken();
