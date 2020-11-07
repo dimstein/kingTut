@@ -14,7 +14,7 @@ class API {
 
   API({@required this.apiKey});
 
-  factory API.sandbox() => API(apiKey: API_Keys.ncovSandboxKey);
+  factory API.sandbox() => API(apiKey: ApiKeys.ncovSandboxKey);
 
   static final String host = 'ncov2019-admin.firebaseapp.com';
 
@@ -25,10 +25,10 @@ class API {
       );
 
   Uri endpointUri(Endpoint endpoint) => Uri(
-    scheme: 'https',
-    host: host,
-    path: _paths[endpoint],
-  );
+        scheme: 'https',
+        host: host,
+        path: _paths[endpoint],
+      );
 
   static Map<Endpoint, String> _paths = {
     Endpoint.cases: 'cases',
